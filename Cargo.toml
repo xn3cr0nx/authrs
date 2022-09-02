@@ -1,8 +1,34 @@
 [package]
 name = "authrs"
 version = "0.1.0"
+authors = ["Patrick Jusic <patrick.jusic@protonmail.com>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+axum = { version = "0.5.15", features = ["headers"] }
+axum-tracing-opentelemetry = { version = "0.4.0", features = ["otlp"] }
+diesel = { version = "1.4.8", features = ["sqlite", "chrono", "serde_json", "uuid"] }
+dotenv = "0.15.0"
+http = "0.2.8"
+opentelemetry = { version = "0.17.0", features = ["tokio", "rt-tokio", "metrics"] }
+opentelemetry-http = "0.6.0"
+opentelemetry-otlp = { version = "0.10.0", features = ["metrics"] }
+serde = { version = "1.0.144", features = ["derive"] }
+serde_json = "1.0.85"
+thiserror = "1.0.32"
+tokio = { version = "1.20.1", features = ["full"] }
+tower-http = { version = "0.3.4", features = ["trace"] }
+tracing = "0.1.36"
+tracing-opentelemetry = "0.17.4"
+tracing-subscriber = { version = "0.3.15", features = ["env-filter", "fmt", "json",] }
+utoipa = { version = "1.1.0", git = "https://github.com/juhaku/utoipa", features = ["axum_extras"] }
+utoipa-swagger-ui = { version = "1.1.0", git = "https://github.com/juhaku/utoipa", features = ["axum"] }
+
+
+[profile.release]
+opt-level = 'z'     # Optimize for size.
+lto = true          # Enable Link Time Optimization
+codegen-units = 1   # Reduce number of codegen units to increase optimizations.
+panic = 'abort'     # Abort on panic

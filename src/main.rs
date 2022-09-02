@@ -13,7 +13,7 @@ mod tracer;
 async fn main() {
     let env = environment::parse_env();
 
-    tracer::init();
+    tracer::init(&env);
 
     let mt = meter::init(&env.name);
     let counter = mt

@@ -52,16 +52,10 @@ async fn subspan(req: Request<Body>) -> impl IntoResponse {
 
     let parent_cx = global::get_text_map_propagator(|propagator| {
         propagator.extract(&HeaderExtractor(req.headers()))
-        // propagator.extract(&HeaderExtractor(&headers))
     });
 
-    // let parent_cx = extract_remote_context(req.headers());
     info!("Got ctx: {:?}", parent_cx);
-    
-    // let cx = Context::current();
-    // let mut span = global::tracer(env!("CARGO_PKG_NAME")).start_with_context("subspan", &cx);
-    // let mut span = global::tracer(env!("CARGO_PKG_NAME")).start("subspan");
-    // let mut span = global::tracer(env!("CARGO_PKG_NAME")).start_with_context("subspan", &parent_cx);
+
     let mut span = global::tracer("").start_with_context("subspan", &parent_cx);
     span.add_event("handling in subspan", Vec::new());
 
@@ -69,21 +63,4 @@ async fn subspan(req: Request<Body>) -> impl IntoResponse {
     let _span = tracing::info_span!("fucking span", "some test");
 
     axum::Json(json!({ "status" : "Ok" }))
-}
-
-fn extract_remote_context(headers: &http::HeaderMap) -> opentelemetry::Context {
-    struct HeaderExtractor<'a>(&'a http::HeaderMap);
-
-    impl<'a> opentelemetry::propagation::Extractor for HeaderExtractor<'a> {
-        fn get(&self, key: &str) -> Option<&str> {
-            self.0.get(key).and_then(|value| value.to_str().ok())
-        }
-
-        fn keys(&self) -> Vec<&str> {
-            self.0.keys().map(|value| value.as_str()).collect()
-        }
-    }
-
-    let extractor = HeaderExtractor(headers);
-    opentelemetry::global::get_text_map_propagator(|propagator| propagator.extract(&extractor))
 }

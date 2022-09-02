@@ -5,6 +5,11 @@ pub struct Env {
     pub name: String,
     pub host: String,
     pub port: String,
+
+    // loki
+    pub loki_host: String,
+    pub loki_port: String,
+
     pub db: String,
 }
 
@@ -29,6 +34,16 @@ pub fn parse_env() -> Env {
         Err(_) => "3000".to_string(),
     };
 
+    let loki_host = match env::var("LOKI_HOST") {
+        Ok(v) => v,
+        Err(_) => "127.0.0.1".to_string(),
+    };
+
+    let loki_port = match env::var("LOKI_PORT") {
+        Ok(v) => v,
+        Err(_) => "3100".to_string(),
+    };
+
     let db = match env::var("DATABASE_URL") {
         Ok(v) => v,
         Err(_) => "./auth.db3".to_string(),
@@ -38,6 +53,8 @@ pub fn parse_env() -> Env {
         name,
         host,
         port,
+        loki_host,
+        loki_port,
         db,
     }
 }

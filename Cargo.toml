@@ -21,8 +21,10 @@ thiserror = "1.0.32"
 tokio = { version = "1.20.1", features = ["full"] }
 tower-http = { version = "0.3.4", features = ["trace"] }
 tracing = "0.1.36"
+tracing-loki = "0.2.1"
 tracing-opentelemetry = "0.17.4"
 tracing-subscriber = { version = "0.3.15", features = ["env-filter", "fmt", "json",] }
+url = "2.2.2"
 utoipa = { version = "1.1.0", git = "https://github.com/juhaku/utoipa", features = ["axum_extras"] }
 utoipa-swagger-ui = { version = "1.1.0", git = "https://github.com/juhaku/utoipa", features = ["axum"] }
 

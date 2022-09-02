@@ -1,19 +1,13 @@
-use axum_tracing_opentelemetry::{make_resource, otlp};
+use axum_tracing_opentelemetry::make_resource;
 use opentelemetry::{global, sdk::propagation::TraceContextPropagator, sdk::trace as sdktrace};
-use tracing_subscriber::{layer::SubscriberExt, filter::EnvFilter};
+use tracing_subscriber::{filter::EnvFilter, layer::SubscriberExt};
 
-pub fn init() {
+use crate::environment::Env;
+
+pub fn init(env: &Env) {
     global::set_text_map_propagator(TraceContextPropagator::new());
 
-    let otel_rsrc = make_resource(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
-    // let tracer = otlp::init_tracer(otel_rsrc, |p| {
-    //     // otlp::identity(opentelemetry_otlp::new_pipeline().tracing())
-    //     otlp::identity(p).with_exporter(opentelemetry_otlp::new_exporter().tonic())
-    //     // .install_batch(opentelemetry::runtime::Tokio)
-    //     //     .expect("cannot configure tracer")
-    // })
-    // .expect("cannot configure tracer");
-
+    let otel_rsrc = make_resource(env.name.clone(), env!("CARGO_PKG_VERSION").to_string());
     let tracer = opentelemetry_otlp::new_pipeline()
         .tracing()
         .with_exporter(opentelemetry_otlp::new_exporter().tonic())
@@ -30,12 +24,22 @@ pub fn init() {
     let fmt_layer = tracing_subscriber::fmt::layer()
         .json()
         .with_timer(tracing_subscriber::fmt::time::uptime());
-    
+
+    let (layer, task) = tracing_loki::layer(
+        url::Url::parse(&format!("http://{}:{}", env.loki_host, env.loki_port)).unwrap(),
+        vec![("host".into(), env.name.clone().into())].into_iter().collect(),
+        vec![].into_iter().collect(),
+    )
+    .expect("cannot configure loki");
+
     let subscriber = tracing_subscriber::registry()
         .with(fmt_layer)
         .with(EnvFilter::from_default_env())
+        .with(layer)
         .with(otel_layer);
     tracing::subscriber::set_global_default(subscriber).unwrap();
+
+    tokio::spawn(task);
 }
 
 pub async fn shutdown_signal() {

@@ -27,18 +27,6 @@ datasources:
   apiVersion: 1
   uid: tempo-query
 
-# - name: Jaeger (Tempo)
-#   type: jaeger
-#   access: proxy
-#   orgId: 1
-#   url: http://tempo-query:16686
-#   basicAuth: false
-#   isDefault: false
-#   version: 1
-#   editable: false
-#   apiVersion: 1
-#   uid: jaeger-tempo
-
 - name: Loki
   type: loki
   access: proxy

@@ -79,6 +79,13 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
     <<: *network
 
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - 3100:3100
+    <<: *network
+
   config-concat:
     image: deanwilson/promconf-concat:0.1.0
     container_name: config-concat

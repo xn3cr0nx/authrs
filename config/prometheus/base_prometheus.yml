@@ -1,0 +1,20 @@
+# from base_prometheus.yml
+global:
+  scrape_interval: 15s
+
+# Load a directory of JSON configs
+scrape_configs:
+  - job_name: "stub" # This is a default value, it is mandatory.
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/grafana.json
+          - /etc/prometheus/targets/prometheus.json
+
+  # - job_name: "api"
+  #   metrics_path: /api/internal/metrics
+  #   basic_auth:
+  #     username: "numGLE9SA7qX"
+  #     password: "ZazUELTppR2J"
+  #   file_sd_configs:
+  #     - files:
+  #         - /etc/prometheus/targets/toggl_api.json
